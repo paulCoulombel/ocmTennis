@@ -33,11 +33,3 @@ export async function GET(request: NextRequest) {
     return Response.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
-
-// GET(
-//   new NextRequest("http://localhost/api/cron", {
-//     headers: {
-//       authorization: `Bearer ${process.env.CRON_SECRET}`,
-//     },
-//   })
-// );

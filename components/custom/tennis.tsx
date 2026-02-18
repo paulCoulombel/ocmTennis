@@ -104,7 +104,6 @@ export const handlePageClick = (
     document.getElementById("pool-page")?.clientHeight || window.innerHeight;
 
   const initialPoint = { x: e.clientX, y: e.clientY + window.scrollY };
-  console.log(window.innerHeight);
   const finalPoint = {
     x:
       getPlusOrMinus() * window.innerWidth * 2 * Math.random() + initialPoint.x,
