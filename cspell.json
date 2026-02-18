@@ -1,0 +1,23 @@
+{
+  "version": "0.2",
+  "ignorePaths": [
+    "app/",
+    "i18n/messages/*",
+    "tsconfig.tsbuildinfo",
+    "prisma/migrations/*",
+    "knowledge/plantuml",
+    "public/",
+    "scripts/itc.csv",
+    "scripts/cdc.csv",
+    "package.json",
+    "coverage/",
+    ".gitignore",
+    "cspell.json",
+    "scripts/"
+  ],
+  "dictionaryDefinitions": [],
+  "dictionaries": [],
+  "words": ["tenup"],
+  "ignoreWords": [],
+  "import": []
+}

@@ -1,0 +1,60 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Match {
+  id             Int      @id
+  date           DateTime
+  homeTeamId     Int
+  awayTeamId     Int
+  homeTeam       Team     @relation(fields: [homeTeamId], references: [id], name: "homeTeamMatches")
+  awayTeam       Team     @relation(fields: [awayTeamId], references: [id], name: "awayTeamMatches")
+  homeScore      Int?
+  awayScore      Int?
+  day            Int // day of the match in the championship
+  isPlayed       Boolean
+  isForfeit      Boolean
+  isDisqualified Boolean
+}
+
+model Team {
+  id          Int     @id
+  name        String
+  poolId      Int
+  pool        Pool    @relation(fields: [poolId], references: [id])
+  homeMatches Match[] @relation("homeTeamMatches")
+  awayMatches Match[] @relation("awayTeamMatches")
+  fromClub    Boolean
+  rank        Int
+  points      Int
+}
+
+model Pool {
+  id             Int     @id
+  teams          Team[]
+  category       String
+  subcategory    String? // For the young people category, this will be the age group
+  ballColor      String  @default("yellow") // yellow/green/orange  
+  division       String
+  name           String
+  championshipId Int
+  divisionId     Int
+  phaseId        Int
+  dayNumber      Int
+}
+
+model Url {
+  json   String  @id
+  isOver Boolean @default(false)
+}
