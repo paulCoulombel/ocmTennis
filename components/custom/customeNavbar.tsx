@@ -1,5 +1,5 @@
-"use client";
-import { useState } from "react";
+'use client'
+import { useState } from 'react'
 import {
   MobileNav,
   MobileNavHeader,
@@ -9,18 +9,18 @@ import {
   NavbarLogo,
   NavBody,
   NavItems,
-  SocialNetworkButton,
-} from "../ui/resizable-navbar";
+  SocialNetworkButton
+} from '../ui/resizable-navbar'
 
 export const CustomNavbar = () => {
   const navItems = [
-    { name: "Accueil", link: "/" }, // cspell: disable-line
-    { name: "Championnats par équipe", link: "/teamChampionship" }, // cspell: disable-line
-    { name: "Contact", link: "/contact" },
-  ];
-  const [isOpen, setIsOpen] = useState(false);
+    { name: 'Accueil', link: '/' }, // cspell: disable-line
+    { name: 'Championnats par équipe', link: '/teamChampionship' }, // cspell: disable-line
+    { name: 'Contact', link: '/contact' }
+  ]
+  const [isOpen, setIsOpen] = useState(false)
   return (
-    <Navbar className="absolute top-3 fixed">
+    <Navbar className="top-3 fixed">
       <NavBody>
         <NavbarLogo />
         <NavItems items={navItems} />
@@ -30,7 +30,10 @@ export const CustomNavbar = () => {
       <MobileNav className="border border-neutral-600">
         <MobileNavHeader>
           <NavbarLogo />
-          <MobileNavToggle isOpen={isOpen} onClick={() => setIsOpen(!isOpen)} />
+          <MobileNavToggle
+            isOpen={isOpen}
+            onClickAction={() => setIsOpen(!isOpen)}
+          />
         </MobileNavHeader>
         <MobileNavMenu isOpen={isOpen} onClose={() => setIsOpen(false)}>
           {navItems.map((item, idx) => (
@@ -51,5 +54,5 @@ export const CustomNavbar = () => {
         </MobileNavMenu>
       </MobileNav>
     </Navbar>
-  );
-};
+  )
+}

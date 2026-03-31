@@ -1,37 +1,37 @@
-"use client";
-import { replaceTeamName } from "@/lib/utils/replaceTeamName";
+'use client'
+import { replaceTeamName } from '@/lib/utils/replaceTeamName'
 // cspell: disable
-import { Badge } from "@/components/ui/badge";
-import { ColumnDef } from "@tanstack/react-table";
-import { Home } from "lucide-react";
+import { Badge } from '@/components/ui/badge'
+import { ColumnDef } from '@tanstack/react-table'
+import { Home } from 'lucide-react'
 
 export interface PoolRankingTable {
-  id: number;
-  name: string;
-  points: number;
-  rank: number;
-  fromClub: boolean;
-  wins: number;
-  draws: number;
-  losses: number;
+  id: number
+  name: string
+  points: number
+  rank: number
+  fromClub: boolean
+  wins: number
+  draws: number
+  losses: number
 }
 
 export const poolRankingColumns: ColumnDef<PoolRankingTable>[] = [
   {
-    accessorKey: "rank",
+    accessorKey: 'rank',
     header: () => <div className="text-center">#</div>,
     cell: ({ row }) => (
-      <div className="text-center font-medium">{row.getValue("rank")}</div>
+      <div className="text-center font-medium">{row.getValue('rank')}</div>
     ),
     meta: {
-      className: "text-center",
-    },
+      className: 'text-center'
+    }
   },
   {
-    accessorKey: "name",
-    header: "Équipe",
+    accessorKey: 'name',
+    header: 'Équipe',
     cell: ({ row }) => {
-      const team = row.original;
+      const team = row.original
       return (
         <div className="flex items-center space-x-2">
           {team.fromClub ? (
@@ -48,24 +48,24 @@ export const poolRankingColumns: ColumnDef<PoolRankingTable>[] = [
             <span className="font-medium">{replaceTeamName(team.name)}</span>
           )}
         </div>
-      );
-    },
+      )
+    }
   },
   {
-    accessorKey: "points",
+    accessorKey: 'points',
     header: () => <div className="text-center">Pts</div>,
     cell: ({ row }) => (
-      <div className="text-center font-bold">{row.getValue("points")}</div>
+      <div className="text-center font-bold">{row.getValue('points')}</div>
     ),
     meta: {
-      className: "text-center",
-    },
+      className: 'text-center'
+    }
   },
   {
-    id: "record",
+    id: 'record',
     header: () => <div className="text-center">V/N/D</div>,
     cell: ({ row }) => {
-      const team = row.original;
+      const team = row.original
       return (
         <div className="text-center">
           <span className="text-green-400 font-medium">{team.wins}</span>
@@ -74,10 +74,10 @@ export const poolRankingColumns: ColumnDef<PoolRankingTable>[] = [
           <span className="text-gray-400 mx-1">/</span>
           <span className="text-red-400 font-medium">{team.losses}</span>
         </div>
-      );
+      )
     },
     meta: {
-      className: "text-center",
-    },
-  },
-];
+      className: 'text-center'
+    }
+  }
+]

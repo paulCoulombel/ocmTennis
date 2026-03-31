@@ -1,39 +1,39 @@
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Column } from "@tanstack/react-table";
-import clsx from "clsx";
-import { useState } from "react";
+  SelectValue
+} from '@/components/ui/select'
+import { Column } from '@tanstack/react-table'
+import clsx from 'clsx'
+import { useState } from 'react'
 
 export interface FilterHeaderSelectProps {
-  placeholder: string;
-  column: Column<any>;
-  filterOptions: any[];
-  resetFilterTranslation: string;
+  placeholder: string
+  column: Column<any>
+  filterOptions: any[]
+  resetFilterTranslation: string
 }
 export default function FilterHeaderSelect({
   placeholder,
   column,
   filterOptions,
-  resetFilterTranslation,
+  resetFilterTranslation
 }: FilterHeaderSelectProps) {
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState('')
 
   const handleValueChange = (value: string) => {
-    const valueToSet = value === "reset" ? "" : value;
-    setValue(valueToSet);
-    column.setFilterValue(valueToSet);
-  };
+    const valueToSet = value === 'reset' ? '' : value
+    setValue(valueToSet)
+    column.setFilterValue(valueToSet)
+  }
   return (
     <Select value={value} onValueChange={handleValueChange}>
       <SelectTrigger
-        className={clsx("min-w-32 data-[placeholder]:text-white", {
-          "border-slate-500": !value,
+        className={clsx('min-w-32 data-[placeholder]:text-white', {
+          'border-slate-500': !value
         })}
       >
         <SelectValue placeholder={placeholder} />
@@ -56,5 +56,5 @@ export default function FilterHeaderSelect({
         )}
       </SelectContent>
     </Select>
-  );
+  )
 }

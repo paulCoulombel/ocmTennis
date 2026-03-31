@@ -1,4 +1,5 @@
-"use client";
+/* eslint-disable react/no-unescaped-entities */
+'use client'
 
 export default function PrivacyPolicyPage() {
   return (
@@ -165,5 +166,5 @@ export default function PrivacyPolicyPage() {
         </div>
       </div>
     </main>
-  );
+  )
 }

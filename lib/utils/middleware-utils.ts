@@ -1,6 +1,6 @@
 export const isPathMatchingWithPrefixes = ({
   path,
-  prefixes,
+  prefixes
 }: {
   path: string
   prefixes: string[]

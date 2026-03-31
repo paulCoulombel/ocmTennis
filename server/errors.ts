@@ -4,7 +4,7 @@ export class StatusCodeError extends Error {
   constructor({
     message,
     statusCode,
-    originalErrorMessage,
+    originalErrorMessage
   }: {
     message: string
     statusCode: number

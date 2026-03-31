@@ -17,7 +17,7 @@ export const formatMinsIntoHours = (mins: number) => {
 
 export const formatRentabilityPeriod = (
   { years, months }: { years: number; months: number },
-  locale: string = 'fr',
+  locale: string = 'fr'
 ) => {
   let returnString = ''
   switch (locale) {
@@ -78,13 +78,13 @@ export const customRoundUnit = (value: number, precision: number) => {
 export const formatDate = (
   dateAsString: string,
   pattern = 'dd/MM/yy HH:mm:ss',
-  locale: string = 'fr',
+  locale: string = 'fr'
 ) => {
   const date = new Date(dateAsString)
   if (!isValid(date)) return dateAsString
 
   const localeMap = {
-    fr: fr,
+    fr: fr
   } as const satisfies Record<string, Locale>
   if (!Array.from(Object.keys(localeMap)).includes(locale)) {
     locale = 'fr'
@@ -92,7 +92,7 @@ export const formatDate = (
   //cspell:ignore dateFnsLocale
   const dateFnsLocale = localeMap[locale as keyof typeof localeMap]
   return format(date, pattern, {
-    locale: dateFnsLocale,
+    locale: dateFnsLocale
   })
 }
 
@@ -105,13 +105,13 @@ export function formatCurrency(amount: number): string {
     style: 'currency',
     currency: 'EUR',
     minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
+    maximumFractionDigits: 2
   }).format(amount)
 }
 
 export function formatNumber(number: number): string {
   return new Intl.NumberFormat('fr-FR', {
     minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
+    maximumFractionDigits: 2
   }).format(number)
 }

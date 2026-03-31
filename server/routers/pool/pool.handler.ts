@@ -1,27 +1,32 @@
-import { prisma } from "@/lib/prisma";
-import { tenupResponseSchema } from "./pool.schema";
+import { prisma } from '@/lib/prisma'
+import { tenupResponseSchema } from './pool.schema'
+
+export const capitalizeFirstLetter = (str: string) => {
+  if (!str) return str
+  return str.charAt(0).toUpperCase() + str.slice(1)
+}
 
 export const groupMatchesByDay = <T extends { day: number }>(matches: T[]) => {
   const grouped = matches.reduce(
     (acc, match) => {
       if (!acc[match.day]) {
-        acc[match.day] = [];
+        acc[match.day] = []
       }
-      acc[match.day].push(match);
-      return acc;
+      acc[match.day].push(match)
+      return acc
     },
-    {} as Record<number, T[]>,
-  );
+    {} as Record<number, T[]>
+  )
 
   return Object.entries(grouped)
     .map(([day, matches]) => ({ day: parseInt(day), matches }))
-    .sort((a, b) => a.day - b.day);
-};
+    .sort((a, b) => a.day - b.day)
+}
 
 export const getInformationHandler = async ({
-  input,
+  input
 }: {
-  input: { poolId: number };
+  input: { poolId: number }
 }) => {
   const pool = await prisma.pool.findUnique({
     where: { id: input.poolId },
@@ -40,20 +45,32 @@ export const getInformationHandler = async ({
           points: true,
           rank: true,
           homeMatches: true,
-          fromClub: true,
-        },
+          fromClub: true
+        }
       },
       championshipId: true,
       divisionId: true,
       phaseId: true,
-    },
-  });
+      doubleBonus: true,
+      doubleCount: true,
+      simpleCount: true,
+      doubleFormatCode: true,
+      simpleFormatCode: true,
+      pointsForDisqualification: true,
+      pointsForDoubleWin: true,
+      pointsForSimpleWin: true,
+      pointsForDraw: true,
+      pointsForForfeit: true,
+      pointsForLoss: true,
+      pointsForWin: true
+    }
+  })
   if (!pool) {
-    throw new Error("Pool not found");
+    throw new Error('Pool not found')
   }
   const ourTeamIds = pool.teams
     .filter((team) => team.fromClub)
-    .map((team) => team.id);
+    .map((team) => team.id)
   const nextMatches = pool.teams
     .map((team) => {
       return team.homeMatches
@@ -62,58 +79,58 @@ export const getInformationHandler = async ({
           ...match,
           isOurMatch:
             ourTeamIds.includes(match.homeTeamId) ||
-            ourTeamIds.includes(match.awayTeamId),
-        }));
+            ourTeamIds.includes(match.awayTeamId)
+        }))
     })
-    .flat();
-  const nextMatchesSortedByDay = groupMatchesByDay(nextMatches);
+    .flat()
+  const nextMatchesSortedByDay = groupMatchesByDay(nextMatches)
 
   const matches = pool.teams
     .map((team) => {
-      return team.homeMatches;
+      return team.homeMatches
     })
-    .flat();
-  const matchesSortedByDay = groupMatchesByDay(matches);
+    .flat()
+  const matchesSortedByDay = groupMatchesByDay(matches)
 
   const previousMatches = matchesSortedByDay
     .filter(({ matches }) => {
-      return matches.some((match) => match.isPlayed);
+      return matches.some((match) => match.isPlayed)
     })
-    .sort((a, b) => b.day - a.day);
+    .sort((a, b) => b.day - a.day)
 
   return {
     ...pool,
     nextMatches: nextMatchesSortedByDay,
-    previousMatches,
-  };
-};
+    previousMatches
+  }
+}
 
 export const getMatchInformationHandler = async ({
-  input,
+  input
 }: {
-  input: { poolId: number; matchId: number };
+  input: { poolId: number; matchId: number }
 }) => {
   const pool = await prisma.pool.findUnique({
     where: { id: input.poolId },
     select: {
       championshipId: true,
       divisionId: true,
-      phaseId: true,
-    },
-  });
+      phaseId: true
+    }
+  })
   if (!pool) {
-    throw new Error("Pool not found");
+    throw new Error('Pool not found')
   }
-  const url = `https://tenup.fft.fr/back/public/v1/championnats-equipes/${pool.championshipId}/divisions/${pool.divisionId}/phases/${pool.phaseId}/poules/${input.poolId}/rencontres/${input.matchId}`;
-  const response = await fetch(url);
+  const url = `https://tenup.fft.fr/back/public/v1/championnats-equipes/${pool.championshipId}/divisions/${pool.divisionId}/phases/${pool.phaseId}/poules/${input.poolId}/rencontres/${input.matchId}`
+  const response = await fetch(url)
   if (!response.ok) {
-    throw new Error("Failed to fetch match information");
+    throw new Error('Failed to fetch match information')
   }
-  const data = await response.json();
-  const verifiedData = tenupResponseSchema.safeParse(data);
+  const data = await response.json()
+  const verifiedData = tenupResponseSchema.safeParse(data)
   if (!verifiedData.success) {
-    console.error(verifiedData.error);
-    throw new Error("Invalid match information data");
+    console.error(verifiedData.error)
+    throw new Error('Invalid match information data')
   }
 
   // cspell: disable
@@ -122,15 +139,15 @@ export const getMatchInformationHandler = async ({
       poolId: input.poolId,
       OR: [
         { id: verifiedData.data.equipeRecevante.id },
-        { id: verifiedData.data.equipeInvitee.id },
-      ],
+        { id: verifiedData.data.equipeInvitee.id }
+      ]
     },
     select: {
       rank: true,
       points: true,
-      id: true,
-    },
-  });
+      id: true
+    }
+  })
 
   return {
     championshipId: pool.championshipId,
@@ -145,22 +162,46 @@ export const getMatchInformationHandler = async ({
       isDisqualified: verifiedData.data.equipeRecevante.disqualification,
       rank:
         teamInformation.find(
-          (team) => team.id === verifiedData.data.equipeRecevante.id,
+          (team) => team.id === verifiedData.data.equipeRecevante.id
         )?.rank ?? null,
       players: verifiedData.data.matchs
         .filter((m) => {
-          return m.id !== null && m.simple;
+          return m.id !== null
         })
         .map((match) => ({
-          firstName:
-            match.joueur1Recevant !== null ? match.joueur1Recevant.prenom : "",
+          firstName: capitalizeFirstLetter(
+            match.joueur1Recevant !== null ? match.joueur1Recevant.prenom : ''
+          ),
           lastName:
-            match.joueur1Recevant !== null ? match.joueur1Recevant.nom : "",
+            match.joueur1Recevant !== null ? match.joueur1Recevant.nom : '',
           rank:
             match.joueur1Recevant !== null
               ? match.joueur1Recevant.classementSimple
-              : null,
-        })),
+              : null
+        }))
+        .concat(
+          verifiedData.data.matchs
+            .filter((m) => m.id !== null && !m.simple)
+            .map((match) => ({
+              firstName: capitalizeFirstLetter(
+                match.joueur2Recevant !== null
+                  ? match.joueur2Recevant.prenom
+                  : ''
+              ),
+              lastName:
+                match.joueur2Recevant !== null ? match.joueur2Recevant.nom : '',
+              rank: null
+            }))
+        )
+        .filter(
+          (player, index, self) =>
+            index ===
+            self.findIndex(
+              (p) =>
+                p.firstName === player.firstName &&
+                p.lastName === player.lastName
+            )
+        )
     },
     awayTeam: {
       name: verifiedData.data.equipeInvitee.nom,
@@ -171,21 +212,43 @@ export const getMatchInformationHandler = async ({
       isDisqualified: verifiedData.data.equipeInvitee.disqualification,
       rank:
         teamInformation.find(
-          (team) => team.id === verifiedData.data.equipeInvitee.id,
+          (team) => team.id === verifiedData.data.equipeInvitee.id
         )?.rank ?? null,
       players: verifiedData.data.matchs
         .filter((m) => {
-          return m.id !== null && m.simple;
+          return m.id !== null
         })
         .map((match) => ({
-          firstName:
-            match.joueur1Invite !== null ? match.joueur1Invite.prenom : "",
-          lastName: match.joueur1Invite !== null ? match.joueur1Invite.nom : "",
+          firstName: capitalizeFirstLetter(
+            match.joueur1Invite !== null ? match.joueur1Invite.prenom : ''
+          ),
+          lastName: match.joueur1Invite !== null ? match.joueur1Invite.nom : '',
           rank:
             match.joueur1Invite !== null
               ? match.joueur1Invite.classementSimple
-              : null,
-        })),
+              : null
+        }))
+        .concat(
+          verifiedData.data.matchs
+            .filter((m) => m.id !== null && !m.simple)
+            .map((match) => ({
+              firstName: capitalizeFirstLetter(
+                match.joueur2Invite !== null ? match.joueur2Invite.prenom : ''
+              ),
+              lastName:
+                match.joueur2Invite !== null ? match.joueur2Invite.nom : '',
+              rank: null
+            }))
+        )
+        .filter(
+          (player, index, self) =>
+            index ===
+            self.findIndex(
+              (p) =>
+                p.firstName === player.firstName &&
+                p.lastName === player.lastName
+            )
+        )
     },
     date: verifiedData.data.dateReelle,
     matches: verifiedData.data.matchs
@@ -198,7 +261,7 @@ export const getMatchInformationHandler = async ({
           match.equipeInviteeScores === null ||
           match.equipeRecevanteGagnante === null
         ) {
-          throw new Error("Invalid match data");
+          throw new Error('Invalid match data')
         }
         return {
           id: match.id,
@@ -210,53 +273,57 @@ export const getMatchInformationHandler = async ({
           homeIsWinner: match.equipeRecevanteGagnante,
           homePlayer: [
             {
-              firstName:
+              firstName: capitalizeFirstLetter(
                 match.joueur1Recevant !== null
                   ? match.joueur1Recevant.prenom
-                  : "",
+                  : ''
+              ),
               lastName:
-                match.joueur1Recevant !== null ? match.joueur1Recevant.nom : "",
+                match.joueur1Recevant !== null ? match.joueur1Recevant.nom : '',
               rank:
                 match.joueur1Recevant !== null
                   ? match.joueur1Recevant.classementSimple
-                  : null,
+                  : null
             },
             {
-              firstName:
+              firstName: capitalizeFirstLetter(
                 match.joueur2Recevant !== null
                   ? match.joueur2Recevant.prenom
-                  : "",
+                  : ''
+              ),
               lastName:
-                match.joueur2Recevant !== null ? match.joueur2Recevant.nom : "",
+                match.joueur2Recevant !== null ? match.joueur2Recevant.nom : '',
               rank:
                 match.joueur2Recevant !== null
                   ? match.joueur2Recevant.classementDouble
-                  : null,
-            },
+                  : null
+            }
           ],
           awayPlayer: [
             {
-              firstName:
-                match.joueur1Invite !== null ? match.joueur1Invite.prenom : "",
+              firstName: capitalizeFirstLetter(
+                match.joueur1Invite !== null ? match.joueur1Invite.prenom : ''
+              ),
               lastName:
-                match.joueur1Invite !== null ? match.joueur1Invite.nom : "",
+                match.joueur1Invite !== null ? match.joueur1Invite.nom : '',
               rank:
                 match.joueur1Invite !== null
                   ? match.joueur1Invite.classementSimple
-                  : null,
+                  : null
             },
             {
-              firstName:
-                match.joueur2Invite !== null ? match.joueur2Invite.prenom : "",
+              firstName: capitalizeFirstLetter(
+                match.joueur2Invite !== null ? match.joueur2Invite.prenom : ''
+              ),
               lastName:
-                match.joueur2Invite !== null ? match.joueur2Invite.nom : "",
+                match.joueur2Invite !== null ? match.joueur2Invite.nom : '',
               rank:
                 match.joueur2Invite !== null
                   ? match.joueur2Invite.classementDouble
-                  : null,
-            },
-          ],
-        };
-      }),
-  };
-};
+                  : null
+            }
+          ]
+        }
+      })
+  }
+}

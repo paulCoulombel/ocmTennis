@@ -1,25 +1,23 @@
-import z from "zod";
+import z from 'zod'
 
 export const getInformationSchema = z.object({
-  poolId: z.number(),
-});
-export type getInformationInput = z.infer<typeof getInformationSchema>;
+  poolId: z.number()
+})
+export type getInformationInput = z.infer<typeof getInformationSchema>
 
 export const getMatchInformationSchema = z.object({
   poolId: z.number(),
-  matchId: z.number(),
-});
-export type getMatchInformationInput = z.infer<
-  typeof getMatchInformationSchema
->;
+  matchId: z.number()
+})
+export type getMatchInformationInput = z.infer<typeof getMatchInformationSchema>
 
 // cspell: disable
 const playerSchema = z.object({
   classementSimple: z.string().nullable(),
   classementDouble: z.string().nullable(),
   nom: z.string(),
-  prenom: z.string(),
-});
+  prenom: z.string()
+})
 
 export const tenupResponseSchema = z.object({
   matchs: z.array(
@@ -40,7 +38,7 @@ export const tenupResponseSchema = z.object({
       joueur1Recevant: playerSchema.nullable(),
       joueur2Recevant: playerSchema.nullable(),
       joueur1Invite: playerSchema.nullable(),
-      joueur2Invite: playerSchema.nullable(),
+      joueur2Invite: playerSchema.nullable()
     })
   ),
   dateReelle: z.string(),
@@ -50,7 +48,7 @@ export const tenupResponseSchema = z.object({
     score: z.number(),
     gagnant: z.boolean().nullable(),
     forfait: z.boolean().nullable(),
-    disqualification: z.boolean(),
+    disqualification: z.boolean()
   }),
   equipeInvitee: z.object({
     id: z.number(),
@@ -58,6 +56,6 @@ export const tenupResponseSchema = z.object({
     score: z.number(),
     gagnant: z.boolean().nullable(),
     forfait: z.boolean().nullable(),
-    disqualification: z.boolean(),
-  }),
-});
+    disqualification: z.boolean()
+  })
+})

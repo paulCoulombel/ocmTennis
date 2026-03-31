@@ -17,7 +17,7 @@ export const SortableHeader = ({ column, header }: SortableHeaderProps) => {
       {header}
       <ArrowUpDown
         className={clsx('ml-2 h-4 w-4', {
-          'text-primary': column.getIsSorted(),
+          'text-primary': column.getIsSorted()
         })}
       />
     </Button>

@@ -1,16 +1,16 @@
 // cspell: words ncdai
-import "@ncdai/react-wheel-picker/style.css";
+import '@ncdai/react-wheel-picker/style.css'
 
-import * as WheelPickerPrimitive from "@ncdai/react-wheel-picker";
+import * as WheelPickerPrimitive from '@ncdai/react-wheel-picker'
 
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils'
 
-type WheelPickerValue = WheelPickerPrimitive.WheelPickerValue;
+type WheelPickerValue = WheelPickerPrimitive.WheelPickerValue
 
 type WheelPickerOption<T extends WheelPickerValue = string> =
-  WheelPickerPrimitive.WheelPickerOption<T>;
+  WheelPickerPrimitive.WheelPickerOption<T>
 
-type WheelPickerClassNames = WheelPickerPrimitive.WheelPickerClassNames;
+type WheelPickerClassNames = WheelPickerPrimitive.WheelPickerClassNames
 
 function WheelPickerWrapper({
   className,
@@ -19,14 +19,14 @@ function WheelPickerWrapper({
   return (
     <WheelPickerPrimitive.WheelPickerWrapper
       className={cn(
-        "w-56 rounded-lg border border-zinc-200 bg-white px-1 shadow-xs dark:border-zinc-700/80 dark:bg-zinc-900",
-        "*:data-rwp:first:*:data-rwp-highlight-wrapper:rounded-s-md",
-        "*:data-rwp:last:*:data-rwp-highlight-wrapper:rounded-e-md",
-        className,
+        'w-56 rounded-lg border border-zinc-200 bg-white px-1 shadow-xs dark:border-zinc-700/80 dark:bg-zinc-900',
+        '*:data-rwp:first:*:data-rwp-highlight-wrapper:rounded-s-md',
+        '*:data-rwp:last:*:data-rwp-highlight-wrapper:rounded-e-md',
+        className
       )}
       {...props}
     />
-  );
+  )
 }
 
 function WheelPicker<T extends WheelPickerValue = string>({
@@ -37,23 +37,20 @@ function WheelPicker<T extends WheelPickerValue = string>({
     <WheelPickerPrimitive.WheelPicker
       classNames={{
         optionItem: cn(
-          "text-zinc-400 data-disabled:opacity-40 dark:text-zinc-500",
-          classNames?.optionItem,
+          'text-zinc-400 data-disabled:opacity-40 dark:text-zinc-500',
+          classNames?.optionItem
         ),
         highlightWrapper: cn(
-          "bg-zinc-100 text-zinc-950 dark:bg-zinc-800 dark:text-zinc-50",
-          "data-rwp-focused:ring-2 data-rwp-focused:ring-zinc-300 data-rwp-focused:ring-inset dark:data-rwp-focused:ring-zinc-600",
-          classNames?.highlightWrapper,
+          'bg-zinc-100 text-zinc-950 dark:bg-zinc-800 dark:text-zinc-50',
+          'data-rwp-focused:ring-2 data-rwp-focused:ring-zinc-300 data-rwp-focused:ring-inset dark:data-rwp-focused:ring-zinc-600',
+          classNames?.highlightWrapper
         ),
-        highlightItem: cn(
-          "data-disabled:opacity-40",
-          classNames?.highlightItem,
-        ),
+        highlightItem: cn('data-disabled:opacity-40', classNames?.highlightItem)
       }}
       {...props}
     />
-  );
+  )
 }
 
-export { WheelPicker, WheelPickerWrapper };
-export type { WheelPickerClassNames, WheelPickerOption };
+export { WheelPicker, WheelPickerWrapper }
+export type { WheelPickerClassNames, WheelPickerOption }

@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils'
 import {
   Accessibility,
   Car,
@@ -6,39 +6,39 @@ import {
   Tv,
   Users,
   Users2,
-  Wifi,
-} from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
+  Wifi
+} from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
 
-import { useState } from "react";
-import { CardContent } from "../ui/card";
+import { useState } from 'react'
+import { CardContent } from '../ui/card'
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
-  CarouselPrevious,
-} from "../ui/carousel";
+  CarouselPrevious
+} from '../ui/carousel'
 // cspell: disable
 
 export const CustomHoverEffect = ({
   items,
-  className,
+  className
 }: {
   items: {
-    title: string;
-    description: string;
-    image: string[];
-  }[];
-  className?: string;
+    title: string
+    description: string
+    image: string[]
+  }[]
+  className?: string
 }) => {
-  let [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
 
   return (
     <div
       className={cn(
-        "grid grid-cols-1 md:grid-cols-2  xl:mx-auto xl:w-3/4 py-10",
-        className,
+        'grid grid-cols-1 md:grid-cols-2  xl:mx-auto xl:w-3/4 py-10',
+        className
       )}
     >
       {items.map((item, idx) => (
@@ -56,11 +56,11 @@ export const CustomHoverEffect = ({
                 initial={{ opacity: 0 }}
                 animate={{
                   opacity: 1,
-                  transition: { duration: 0.15 },
+                  transition: { duration: 0.15 }
                 }}
                 exit={{
                   opacity: 0,
-                  transition: { duration: 0.15, delay: 0.2 },
+                  transition: { duration: 0.15, delay: 0.2 }
                 }}
               />
             )}
@@ -71,17 +71,20 @@ export const CustomHoverEffect = ({
               <Carousel
                 className="w-full max-w-xs hover:cursor-grab active:cursor-grabbing flex flex-col items-center"
                 opts={{ loop: true }}
-                orientation={"horizontal"}
+                orientation={'horizontal'}
               >
                 <CarouselContent>
                   {item.image.map((path, index) => (
                     <CarouselItem key={index}>
-                      <div className="p-1">
-                        <img
-                          src={path}
-                          alt={item.title + " image " + (index + 1)}
-                          className="h-full w-full flex items-center justify-center border border-transparent rounded-lg object-cover"
-                        />
+                      <div className="p-1 flex items-center justify-center">
+                        {
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={path}
+                            alt={item.title + ' image ' + (index + 1)}
+                            className="h-full w-full flex items-center justify-center rounded-lg object-cover ring-3 ring-[rgba(231,205,220)]"
+                          />
+                        }
                       </div>
                     </CarouselItem>
                   ))}
@@ -118,11 +121,11 @@ export const CustomHoverEffect = ({
               initial={{ opacity: 0 }}
               animate={{
                 opacity: 1,
-                transition: { duration: 0.15 },
+                transition: { duration: 0.15 }
               }}
               exit={{
                 opacity: 0,
-                transition: { duration: 0.15, delay: 0.2 },
+                transition: { duration: 0.15, delay: 0.2 }
               }}
             />
           )}
@@ -167,57 +170,57 @@ export const CustomHoverEffect = ({
         </Card>
       </div>
     </div>
-  );
-};
+  )
+}
 
 export const Card = ({
   className,
-  children,
+  children
 }: {
-  className?: string;
-  children: React.ReactNode;
+  className?: string
+  children: React.ReactNode
 }) => {
   return (
     <div
       className={cn(
-        "rounded-2xl h-full w-full p-4 overflow-hidden bg-black border border-transparent dark:border-white/[0.2] group-hover:border-slate-700 relative z-5",
-        className,
+        'rounded-2xl h-full w-full p-4 overflow-hidden bg-black border border-white/20 group-hover:border-slate-700 relative z-5',
+        className
       )}
     >
       <div className="relative z-10">
         <div className="p-4">{children}</div>
       </div>
     </div>
-  );
-};
+  )
+}
 export const CardTitle = ({
   className,
-  children,
+  children
 }: {
-  className?: string;
-  children: React.ReactNode;
+  className?: string
+  children: React.ReactNode
 }) => {
   return (
-    <h4 className={cn("text-zinc-100 font-bold tracking-wide mt-4", className)}>
+    <h4 className={cn('text-zinc-100 font-bold tracking-wide mt-4', className)}>
       {children}
     </h4>
-  );
-};
+  )
+}
 export const CardDescription = ({
   className,
-  children,
+  children
 }: {
-  className?: string;
-  children: React.ReactNode;
+  className?: string
+  children: React.ReactNode
 }) => {
   return (
     <p
       className={cn(
-        "mt-8 text-zinc-400 tracking-wide leading-relaxed text-sm",
-        className,
+        'mt-8 text-zinc-400 tracking-wide leading-relaxed text-sm',
+        className
       )}
     >
       {children}
     </p>
-  );
-};
+  )
+}

@@ -1,8 +1,9 @@
-"use client";
+/* eslint-disable react/no-unescaped-entities */
+'use client'
 
 export default function LegalNoticePage() {
   return (
-    <main className="pt-30 m-auto max-w-[min(95%,48rem)] p-6 prose prose-invert max-w-none">
+    <main className="pt-30 m-auto p-6 prose prose-invert max-w-none">
       <div className="space-y-6">
         <h1 className="text-3xl font-bold mb-8">MENTIONS LÉGALES</h1>
 
@@ -38,7 +39,7 @@ export default function LegalNoticePage() {
           </h3>
           <div className=" space-y-2">
             <p>
-              <strong>Adresse de courrier électronique :</strong>{" "}
+              <strong>Adresse de courrier électronique :</strong>{' '}
               tennis.ocm@gmail.com
             </p>
           </div>
@@ -89,5 +90,5 @@ export default function LegalNoticePage() {
         </section>
       </div>
     </main>
-  );
+  )
 }

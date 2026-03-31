@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import {
   ColumnDef,
@@ -9,8 +9,8 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   SortingState,
-  useReactTable,
-} from "@tanstack/react-table";
+  useReactTable
+} from '@tanstack/react-table'
 
 import {
   Table,
@@ -18,17 +18,17 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import clsx from "clsx";
-import { useState } from "react";
+  TableRow
+} from '@/components/ui/table'
+import clsx from 'clsx'
+import { useState } from 'react'
 
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
-  noResultMessage: string;
-  fixedFirstColumn?: boolean;
-  rowClassName?: string;
+  columns: ColumnDef<TData, TValue>[]
+  data: TData[]
+  noResultMessage: string
+  fixedFirstColumn?: boolean
+  rowClassName?: string
 }
 
 export function DataTable<TData, TValue>({
@@ -36,10 +36,10 @@ export function DataTable<TData, TValue>({
   data,
   noResultMessage,
   fixedFirstColumn,
-  rowClassName,
+  rowClassName
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const table = useReactTable({
     data,
     columns,
@@ -51,16 +51,16 @@ export function DataTable<TData, TValue>({
     onColumnFiltersChange: setColumnFilters,
     state: {
       sorting,
-      columnFilters,
+      columnFilters
     },
     rowCount: data.length,
     initialState: {
       pagination: {
         pageIndex: 0,
-        pageSize: data.length,
-      },
-    },
-  });
+        pageSize: data.length
+      }
+    }
+  })
 
   return (
     <div className="rounded-md border border-neutral-600 bg-neutral-800 shadow-lg">
@@ -73,9 +73,9 @@ export function DataTable<TData, TValue>({
                   <TableHead
                     className={clsx(
                       {
-                        "sticky left-0 z-10": fixedFirstColumn && index === 0,
+                        'sticky left-0 z-10': fixedFirstColumn && index === 0
                       },
-                      "bg-neutral-700 text-neutral-200 font-semibold border-r border-neutral-600/50",
+                      'bg-neutral-700 text-neutral-200 font-semibold border-r border-neutral-600/50'
                     )}
                     key={header.id}
                   >
@@ -83,10 +83,10 @@ export function DataTable<TData, TValue>({
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
-                          header.getContext(),
+                          header.getContext()
                         )}
                   </TableHead>
-                );
+                )
               })}
             </TableRow>
           ))}
@@ -96,23 +96,23 @@ export function DataTable<TData, TValue>({
             table.getRowModel().rows.map((row, indexRow) => (
               <TableRow
                 key={row.id}
-                data-state={row.getIsSelected() && "selected"}
+                data-state={row.getIsSelected() && 'selected'}
                 className={clsx(
-                  "border-neutral-600 hover:bg-neutral-700/50 text-neutral-200 transition-colors",
-                  rowClassName,
+                  'border-neutral-600 hover:bg-neutral-700/50 text-neutral-200 transition-colors',
+                  rowClassName
                 )}
               >
                 {row.getVisibleCells().map((cell, indexCell) => (
                   <TableCell
                     className={clsx(
                       {
-                        "sticky left-0 z-10":
-                          fixedFirstColumn && indexCell === 0,
+                        'sticky left-0 z-10':
+                          fixedFirstColumn && indexCell === 0
                       },
-                      "bg-neutral-800 border-r border-neutral-600/30",
+                      'bg-neutral-800 border-r border-neutral-600/30',
                       {
-                        "bg-neutral-700/50": indexRow % 2 !== 0,
-                      },
+                        'bg-neutral-700/50': indexRow % 2 !== 0
+                      }
                     )}
                     key={cell.id}
                   >
@@ -134,5 +134,5 @@ export function DataTable<TData, TValue>({
         </TableBody>
       </Table>
     </div>
-  );
+  )
 }

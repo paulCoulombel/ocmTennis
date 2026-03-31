@@ -1,6 +1,10 @@
-import { useEffect, useRef } from "react";
-import * as THREE from "three";
+import { useEffect, useRef } from 'react'
+import * as THREE from 'three'
 // cspell: disable
+
+const FLOWER_INTERVAL_MS = 500
+const FLOWER_GROWTH_DURATION_S = 1.2
+const INITIAL_LAUNCH_DELAY_MS = 2500
 
 export const vertexShader = /* glsl */ `
 varying vec2 vUv;
@@ -9,7 +13,7 @@ void main() {
   vUv = uv;
   gl_Position = vec4(position, 1.0);
 }
-`;
+`
 
 export const fragmentShader = /* glsl */ `
 #define PI 3.14159265359
@@ -206,164 +210,311 @@ void main() {
 
     gl_FragColor = vec4(color, alpha);
 }
-`;
+`
 // cspell: enable
 
 export function FlowerCanvas({
   firstFlowersPointer,
   flowerScale,
-  canvasId,
+  canvasId
 }: {
-  firstFlowersPointer: { x: number; y: number }[];
-  flowerScale: number;
-  canvasId?: string;
+  firstFlowersPointer: { x: number; y: number }[]
+  flowerScale: number
+  canvasId?: string
 }) {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
   useEffect(() => {
-    if (!canvasRef.current) return;
+    if (!canvasRef.current) return
 
-    const canvas = canvasRef.current;
-    canvas.style.background = "transparent";
+    const canvas = canvasRef.current
+    canvas.style.background = 'transparent'
     const pointer = {
       x: firstFlowersPointer[0].x,
       y: firstFlowersPointer[0].y,
       clicked: true,
-      vanishCanvas: false,
-    };
+      vanishCanvas: false
+    }
 
-    const renderer = new THREE.WebGLRenderer({
-      canvas,
+    const contextAttributes: WebGLContextAttributes = {
       alpha: true,
+      antialias: false,
       premultipliedAlpha: false,
-      antialias: true,
-      preserveDrawingBuffer: true,
-    });
+      preserveDrawingBuffer: false,
+      powerPreference: 'low-power'
+    }
 
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    const webglContext =
+      canvas.getContext('webgl2', contextAttributes) ??
+      canvas.getContext('webgl', contextAttributes) ??
+      canvas.getContext('experimental-webgl', contextAttributes)
 
-    const sceneShader = new THREE.Scene();
-    const sceneBasic = new THREE.Scene();
-    const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 10);
-    const clock = new THREE.Clock();
+    if (!webglContext) {
+      return
+    }
+
+    let renderer: THREE.WebGLRenderer
+    try {
+      renderer = new THREE.WebGLRenderer({
+        canvas,
+        context: webglContext as WebGLRenderingContext,
+        alpha: true,
+        premultipliedAlpha: false,
+        antialias: false,
+        powerPreference: 'low-power'
+      })
+    } catch {
+      return
+    }
+
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+
+    const sceneShader = new THREE.Scene()
+    const sceneBasic = new THREE.Scene()
+    const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 10)
+    const clock = new THREE.Clock()
+    clock.stop()
 
     const renderTargets = [
       new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
         format: THREE.RGBAFormat,
-        type: THREE.UnsignedByteType,
+        type: THREE.UnsignedByteType
       }),
       new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
         format: THREE.RGBAFormat,
-        type: THREE.UnsignedByteType,
-      }),
-    ];
+        type: THREE.UnsignedByteType
+      })
+    ]
 
     const shaderMaterial = new THREE.ShaderMaterial({
       uniforms: {
         u_stop_time: { value: 0 },
         u_stop_randomizer: {
-          value: new THREE.Vector2(Math.random(), Math.random()),
+          value: new THREE.Vector2(Math.random(), Math.random())
         },
         u_cursor: { value: new THREE.Vector2(pointer.x, pointer.y) },
         u_ratio: { value: window.innerWidth / window.innerHeight },
         u_texture: { value: null },
         u_clean: { value: 1 },
-        u_scale: { value: 1 / flowerScale }, // Adjust scale based on prop
+        u_scale: { value: 1 / flowerScale } // Adjust scale based on prop
       },
       vertexShader: vertexShader,
       fragmentShader: fragmentShader,
       transparent: true,
       blending: THREE.NormalBlending,
-      depthWrite: false,
-    });
+      depthWrite: false
+    })
 
     const basicMaterial = new THREE.MeshBasicMaterial({
       transparent: true,
       alphaTest: 0.01,
-      blending: THREE.NormalBlending,
-    });
-    const geometry = new THREE.PlaneGeometry(2, 2);
+      blending: THREE.NormalBlending
+    })
+    const geometry = new THREE.PlaneGeometry(2, 2)
+    const shaderMesh = new THREE.Mesh(geometry, shaderMaterial)
+    const basicMesh = new THREE.Mesh(geometry, basicMaterial)
 
-    sceneShader.add(new THREE.Mesh(geometry, shaderMaterial));
-    sceneBasic.add(new THREE.Mesh(geometry, basicMaterial));
+    sceneShader.add(shaderMesh)
+    sceneBasic.add(basicMesh)
 
     function resize() {
-      renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-      shaderMaterial.uniforms.u_ratio.value =
-        canvas.clientWidth / canvas.clientHeight;
-    }
-    let lastClickTime = new Date().getTime() + 500;
-    let indexFirstFlowersDisplayed = 1;
+      const width = Math.max(1, canvas.clientWidth)
+      const height = Math.max(1, canvas.clientHeight)
 
-    function render() {
-      shaderMaterial.uniforms.u_clean.value = pointer.vanishCanvas ? 0 : 1;
-      shaderMaterial.uniforms.u_texture.value = renderTargets[0].texture;
-      if (pointer.clicked && new Date().getTime() - lastClickTime > 500) {
-        shaderMaterial.uniforms.u_cursor.value.set(pointer.x, 1 - pointer.y);
-        shaderMaterial.uniforms.u_scale.value =
-          (1 / flowerScale) * pointer.y ** 0.5; // Taller flowers = bigger flower
-        shaderMaterial.uniforms.u_stop_time.value = 0;
-        pointer.clicked = false;
-        lastClickTime = new Date().getTime();
+      renderer.setSize(width, height, false)
+      shaderMaterial.uniforms.u_ratio.value = width / height
+      renderTargets[0].setSize(width, height)
+      renderTargets[1].setSize(width, height)
+    }
+
+    let animationFrameId: number | null = null
+    let launchTimeoutId: ReturnType<typeof setTimeout> | null = null
+    let resizeObserver: ResizeObserver | null = null
+    let isRendering = false
+    let isDisposed = false
+    let isPageVisible = document.visibilityState === 'visible'
+
+    let lastClickTime = performance.now() + FLOWER_INTERVAL_MS
+    let indexFirstFlowersDisplayed = 1
+    let growthRemaining = 0
+
+    function renderFrame() {
+      if (isDisposed || !isPageVisible) {
+        isRendering = false
+        return
       }
+
+      animationFrameId = requestAnimationFrame(renderFrame)
+
+      shaderMaterial.uniforms.u_clean.value = pointer.vanishCanvas ? 0 : 1
+      shaderMaterial.uniforms.u_texture.value = renderTargets[0].texture
+
+      const now = performance.now()
+
+      if (pointer.clicked && now - lastClickTime > FLOWER_INTERVAL_MS) {
+        shaderMaterial.uniforms.u_cursor.value.set(pointer.x, 1 - pointer.y)
+        shaderMaterial.uniforms.u_scale.value =
+          (1 / flowerScale) * pointer.y ** 0.5 // Taller flowers = bigger flower
+        shaderMaterial.uniforms.u_stop_time.value = 0
+        pointer.clicked = false
+        lastClickTime = now
+        growthRemaining = FLOWER_GROWTH_DURATION_S
+        shaderMaterial.uniforms.u_stop_randomizer.value.set(
+          Math.random(),
+          Math.random()
+        )
+      }
+
       if (
         indexFirstFlowersDisplayed < firstFlowersPointer.length &&
-        new Date().getTime() - lastClickTime > 500
+        now - lastClickTime > FLOWER_INTERVAL_MS
       ) {
         shaderMaterial.uniforms.u_cursor.value.set(
           firstFlowersPointer[indexFirstFlowersDisplayed].x,
-          1 - firstFlowersPointer[indexFirstFlowersDisplayed].y,
-        );
+          1 - firstFlowersPointer[indexFirstFlowersDisplayed].y
+        )
         shaderMaterial.uniforms.u_scale.value =
           (1 / flowerScale) *
-          firstFlowersPointer[indexFirstFlowersDisplayed].y ** 0.5;
-        shaderMaterial.uniforms.u_stop_time.value = 0;
-        lastClickTime = new Date().getTime();
-        indexFirstFlowersDisplayed++;
+          firstFlowersPointer[indexFirstFlowersDisplayed].y ** 0.5
+        shaderMaterial.uniforms.u_stop_time.value = 0
+        lastClickTime = now
+        growthRemaining = FLOWER_GROWTH_DURATION_S
+        shaderMaterial.uniforms.u_stop_randomizer.value.set(
+          Math.random(),
+          Math.random()
+        )
+        indexFirstFlowersDisplayed++
       }
-      shaderMaterial.uniforms.u_stop_time.value += clock.getDelta();
 
-      shaderMaterial.uniforms.u_texture.value = renderTargets[0].texture;
+      const delta = Math.min(clock.getDelta(), 0.05)
+      shaderMaterial.uniforms.u_stop_time.value += delta
+      growthRemaining = Math.max(0, growthRemaining - delta)
 
-      renderer.setRenderTarget(renderTargets[1]);
-      renderer.clear();
-      renderer.render(sceneShader, camera);
+      shaderMaterial.uniforms.u_texture.value = renderTargets[0].texture
 
-      basicMaterial.map = renderTargets[1].texture;
-      renderer.setRenderTarget(null);
-      renderer.render(sceneBasic, camera);
+      renderer.setRenderTarget(renderTargets[1])
+      renderer.clear()
+      renderer.render(sceneShader, camera)
 
-      [renderTargets[0], renderTargets[1]] = [
+      basicMaterial.map = renderTargets[1].texture
+      renderer.setRenderTarget(null)
+      renderer.render(sceneBasic, camera)
+
+      ;[renderTargets[0], renderTargets[1]] = [
         renderTargets[1],
-        renderTargets[0],
-      ];
+        renderTargets[0]
+      ]
 
-      requestAnimationFrame(render);
+      const hasQueuedFlowers =
+        indexFirstFlowersDisplayed < firstFlowersPointer.length
+      const hasPendingClick = pointer.clicked
+      const mustKeepAnimating =
+        growthRemaining > 0 || hasQueuedFlowers || hasPendingClick
+
+      if (!mustKeepAnimating) {
+        if (animationFrameId !== null) {
+          cancelAnimationFrame(animationFrameId)
+          animationFrameId = null
+        }
+        clock.stop()
+        isRendering = false
+      }
+    }
+
+    function startRendering() {
+      if (isDisposed || isRendering || !isPageVisible) return
+      isRendering = true
+      clock.start()
+      renderFrame()
+    }
+
+    function stopRendering() {
+      if (animationFrameId !== null) {
+        cancelAnimationFrame(animationFrameId)
+        animationFrameId = null
+      }
+      clock.stop()
+      isRendering = false
     }
 
     const onClick = (e: MouseEvent) => {
-      const rect = canvas.getBoundingClientRect();
-      pointer.x = (e.clientX - rect.left) / rect.width;
-      pointer.y = (e.clientY - rect.top) / rect.height;
-      pointer.clicked = true;
-    };
+      const rect = canvas.getBoundingClientRect()
+      pointer.x = (e.clientX - rect.left) / rect.width
+      pointer.y = (e.clientY - rect.top) / rect.height
+      pointer.clicked = true
+      startRendering()
+    }
 
-    canvas.addEventListener("click", onClick);
-    window.addEventListener("resize", resize);
+    const onVisibilityChange = () => {
+      isPageVisible = document.visibilityState === 'visible'
+      if (!isPageVisible) {
+        stopRendering()
+        return
+      }
+      if (
+        pointer.clicked ||
+        indexFirstFlowersDisplayed < firstFlowersPointer.length
+      ) {
+        startRendering()
+      }
+    }
 
-    const launch = async () => {
-      await new Promise((resolve) => setTimeout(resolve, 2500));
-      resize();
-      render();
-    };
-    launch();
+    canvas.addEventListener('click', onClick)
+    window.addEventListener('resize', resize)
+    document.addEventListener('visibilitychange', onVisibilityChange)
+
+    if (typeof ResizeObserver !== 'undefined') {
+      resizeObserver = new ResizeObserver(() => {
+        if (!isDisposed) {
+          resize()
+        }
+      })
+      if (canvas.parentElement) {
+        resizeObserver.observe(canvas.parentElement)
+      } else {
+        resizeObserver.observe(canvas)
+      }
+    }
+
+    const launch = () => {
+      launchTimeoutId = setTimeout(() => {
+        if (isDisposed) return
+        launchTimeoutId = null
+        startRendering()
+      }, INITIAL_LAUNCH_DELAY_MS)
+      resize()
+    }
+    launch()
 
     return () => {
-      canvas.removeEventListener("click", onClick);
-      window.removeEventListener("resize", resize);
-      renderer.dispose();
-    };
-  }, []);
+      isDisposed = true
+      stopRendering()
+
+      if (launchTimeoutId !== null) {
+        clearTimeout(launchTimeoutId)
+      }
+
+      canvas.removeEventListener('click', onClick)
+      window.removeEventListener('resize', resize)
+      document.removeEventListener('visibilitychange', onVisibilityChange)
+
+      if (resizeObserver) {
+        resizeObserver.disconnect()
+      }
+
+      sceneShader.remove(shaderMesh)
+      sceneBasic.remove(basicMesh)
+
+      geometry.dispose()
+      shaderMaterial.dispose()
+      basicMaterial.dispose()
+      renderTargets[0].dispose()
+      renderTargets[1].dispose()
+
+      renderer.setRenderTarget(null)
+      renderer.dispose()
+    }
+  }, [firstFlowersPointer, flowerScale])
 
   return (
     <canvas
@@ -371,5 +522,5 @@ export function FlowerCanvas({
       id={canvasId}
       className="absolute bg-transparent inset-0 w-full h-full z-5"
     />
-  );
+  )
 }

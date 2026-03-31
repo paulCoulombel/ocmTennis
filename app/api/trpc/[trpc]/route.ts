@@ -6,7 +6,7 @@ const handler = async (req: Request) => {
     endpoint: '/api/trpc',
     router: appRouter,
     req,
-    createContext: () => ({}),
+    createContext: () => ({})
   })
 }
 

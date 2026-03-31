@@ -1,16 +1,9 @@
-import {
-  Button,
-  Column,
-  Heading,
-  Hr,
-  Row,
-  Text,
-} from "@react-email/components";
-import DefaultMailTemplate from "../templates/DefaultMailTemplate";
+import { Button, Column, Heading, Hr, Row, Text } from '@react-email/components'
+import DefaultMailTemplate from '../templates/DefaultMailTemplate'
 // cspell:disable
 const baseUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
-  : "";
+  : ''
 
 export const WeeklyResults = () => {
   return (
@@ -34,7 +27,7 @@ export const WeeklyResults = () => {
       <Row>
         <Column className="flex w-full justify-center">
           <Button
-            href={"site-club.vercel.app"}
+            href={'site-club.vercel.app'}
             className="rounded bg-primary px-3 py-2 font-medium leading-4 text-primary-foreground"
           >
             Accéder au site du club
@@ -42,7 +35,7 @@ export const WeeklyResults = () => {
         </Column>
       </Row>
     </DefaultMailTemplate>
-  );
-};
+  )
+}
 
-export default WeeklyResults;
+export default WeeklyResults

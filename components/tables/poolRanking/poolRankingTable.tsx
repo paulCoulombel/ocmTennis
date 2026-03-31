@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import {
   ColumnDef,
@@ -9,8 +9,8 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   SortingState,
-  useReactTable,
-} from "@tanstack/react-table";
+  useReactTable
+} from '@tanstack/react-table'
 
 import {
   Table,
@@ -18,24 +18,24 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import clsx from "clsx";
-import { useState } from "react";
+  TableRow
+} from '@/components/ui/table'
+import clsx from 'clsx'
+import { useState } from 'react'
 
 interface PoolRankingTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
-  noResultMessage: string;
+  columns: ColumnDef<TData, TValue>[]
+  data: TData[]
+  noResultMessage: string
 }
 
 export function PoolRankingTable<TData extends { fromClub: boolean }, TValue>({
   columns,
   data,
-  noResultMessage,
+  noResultMessage
 }: PoolRankingTableProps<TData, TValue>) {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const table = useReactTable({
     data,
     columns,
@@ -47,9 +47,9 @@ export function PoolRankingTable<TData extends { fromClub: boolean }, TValue>({
     onColumnFiltersChange: setColumnFilters,
     state: {
       sorting,
-      columnFilters,
-    },
-  });
+      columnFilters
+    }
+  })
 
   return (
     <div className="rounded-md border border-slate-600 bg-slate-800 shadow-lg">
@@ -70,7 +70,7 @@ export function PoolRankingTable<TData extends { fromClub: boolean }, TValue>({
                           header.getContext()
                         )}
                   </TableHead>
-                );
+                )
               })}
             </TableRow>
           ))}
@@ -80,14 +80,14 @@ export function PoolRankingTable<TData extends { fromClub: boolean }, TValue>({
             table.getRowModel().rows.map((row, indexRow) => (
               <TableRow
                 key={row.id}
-                data-state={row.getIsSelected() && "selected"}
+                data-state={row.getIsSelected() && 'selected'}
                 className={clsx(
-                  "border-slate-600 transition-colors text-slate-200",
+                  'border-slate-600 transition-colors text-slate-200',
                   {
-                    "bg-yellow-500/20 border-l-4 border-yellow-500":
+                    'bg-yellow-500/20 border-l-4 border-yellow-500':
                       row.original.fromClub,
-                    "hover:bg-slate-700/30": !row.original.fromClub,
-                    "hover:bg-yellow-500/20": row.original.fromClub,
+                    'hover:bg-slate-700/30': !row.original.fromClub,
+                    'hover:bg-yellow-500/20': row.original.fromClub
                   }
                 )}
               >
@@ -114,5 +114,5 @@ export function PoolRankingTable<TData extends { fromClub: boolean }, TValue>({
         </TableBody>
       </Table>
     </div>
-  );
+  )
 }

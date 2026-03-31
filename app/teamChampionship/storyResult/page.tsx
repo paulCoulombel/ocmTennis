@@ -1,32 +1,32 @@
-"use client";
+'use client'
 
-import { Badge } from "@/components/ui/badge";
-import { trpc } from "@/server/client";
-import { clsx } from "clsx";
-import { useSearchParams } from "next/navigation";
-import { Suspense, useMemo } from "react";
-import { replaceTeamName } from "@/lib/utils/replaceTeamName";
+import { Badge } from '@/components/ui/badge'
+import { trpc } from '@/server/client'
+import { clsx } from 'clsx'
+import { useSearchParams } from 'next/navigation'
+import { Suspense, useMemo } from 'react'
+import { replaceTeamName } from '@/lib/utils/replaceTeamName'
 
 function TennisResultsContent() {
-  const today = useMemo(() => new Date(), []);
-  const searchParams = useSearchParams();
+  const today = useMemo(() => new Date(), [])
+  const searchParams = useSearchParams()
 
-  const category = searchParams.get("category");
-  const day = Number(searchParams.get("day"));
+  const category = searchParams.get('category')
+  const day = Number(searchParams.get('day'))
   if (!category) {
-    return <div>Category is required</div>;
+    return <div>Category is required</div>
   }
   const { data, isLoading } = trpc.pdf.getScoreResults.useQuery({
     day,
-    category,
-  });
+    category
+  })
   if (isLoading || !data) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>
   }
   return (
     <div
       id="story-export"
-      className="w-[405px] h-[720px] bg-slate-900 text-white p-6 flex flex-col relative overflow-hidden font-sans"
+      className="w-101.25 h-180 bg-slate-900 text-white p-6 flex flex-col relative overflow-hidden font-sans"
     >
       {/* Design Elements - Cercles décoratifs en arrière-plan */}
       <div className="absolute -top-20 -right-20 w-64 h-64 bg-yellow-400 rounded-full blur-[100px] opacity-20"></div>
@@ -43,11 +43,11 @@ function TennisResultsContent() {
           </Badge>
         </div>
         <p className="text-slate-400 font-bold uppercase text-sm tracking-widest">
-          {today.toLocaleDateString("fr-FR", {
-            weekday: "long",
-            year: "numeric",
-            month: "long",
-            day: "numeric",
+          {today.toLocaleDateString('fr-FR', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
           })}
         </p>
         <div className="h-1 w-12 bg-yellow-400 mt-2"></div>
@@ -65,7 +65,7 @@ function TennisResultsContent() {
                 {match.category}
               </span>
               <span className="text-[10px] text-yellow-400 font-bold">
-                {match.isHome ? "DOMICILE" : "EXTÉRIEUR"}
+                {match.isHome ? 'DOMICILE' : 'EXTÉRIEUR'}
               </span>
             </div>
 
@@ -75,7 +75,7 @@ function TennisResultsContent() {
                   {match.isHome ? match.homeTeamName : match.awayTeamName}
                 </div>
                 <div className="text-slate-400 text-sm font-medium">
-                  vs{" "}
+                  vs{' '}
                   {match.isHome
                     ? replaceTeamName(match.awayTeamName)
                     : replaceTeamName(match.homeTeamName)}
@@ -85,12 +85,12 @@ function TennisResultsContent() {
               <div className="flex items-center gap-2 ml-4">
                 <span
                   className={clsx(
-                    "text-2xl font-black",
+                    'text-2xl font-black',
                     match.homeScore !== null && match.awayScore !== null
                       ? match.homeScore > match.awayScore
-                        ? "text-yellow-400"
-                        : "text-slate-400"
-                      : "text-slate-300"
+                        ? 'text-yellow-400'
+                        : 'text-slate-400'
+                      : 'text-slate-300'
                   )}
                 >
                   {match.homeScore}
@@ -98,12 +98,12 @@ function TennisResultsContent() {
                 <span className="text-slate-600 font-bold">-</span>
                 <span
                   className={clsx(
-                    "text-2xl font-black",
+                    'text-2xl font-black',
                     match.homeScore !== null && match.awayScore !== null
                       ? match.homeScore < match.awayScore
-                        ? "text-yellow-400"
-                        : "text-slate-400"
-                      : "text-slate-300"
+                        ? 'text-yellow-400'
+                        : 'text-slate-400'
+                      : 'text-slate-300'
                   )}
                 >
                   {match.awayScore}
@@ -122,7 +122,7 @@ function TennisResultsContent() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 export default function TennisResultsStory() {
@@ -130,5 +130,5 @@ export default function TennisResultsStory() {
     <Suspense fallback={<div>Loading...</div>}>
       <TennisResultsContent />
     </Suspense>
-  );
+  )
 }

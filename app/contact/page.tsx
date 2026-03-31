@@ -1,10 +1,10 @@
-"use client";
+'use client'
 
-import { CustomNavbar } from "@/components/custom/customeNavbar";
-import { CustomFooter } from "@/components/custom/footer";
-import { BackgroundBeamsWithCollision } from "@/components/ui/background-beams-with-collision";
-import { Card } from "@/components/ui/card";
-import { Mail, MapPin, Phone } from "lucide-react";
+import { CustomNavbar } from '@/components/custom/customeNavbar'
+import { CustomFooter } from '@/components/custom/footer'
+import { BackgroundBeamsWithCollision } from '@/components/ui/background-beams-with-collision'
+import { Card } from '@/components/ui/card'
+import { Mail, MapPin, Phone } from 'lucide-react'
 
 export default function ContactPage() {
   return (
@@ -28,7 +28,7 @@ export default function ContactPage() {
             <div className="grid lg:grid-cols-2 gap-8 items-stretch">
               {/* Contact Information */}
               <div className="space-y-6">
-                <Card className="bg-gradient-to-br from-neutral-800 to-neutral-900 border-neutral-600 shadow-2xl hover:shadow-3xl transition-all duration-300 overflow-hidden group h-full flex flex-col">
+                <Card className="bg-linear-to-br from-neutral-800 to-neutral-900 border-neutral-600 shadow-2xl hover:shadow-3xl transition-all duration-300 overflow-hidden group h-full flex flex-col">
                   {/* Header */}
                   <div className="p-6 border-b border-neutral-700">
                     <div className="flex items-center space-x-3">
@@ -46,9 +46,9 @@ export default function ContactPage() {
                   <div className="p-6 space-y-6 flex-1">
                     {/* Address */}
                     <div className="relative group/item">
-                      <div className="absolute -inset-2 bg-gradient-to-r from-green-400/10 to-transparent rounded-lg opacity-0 group-hover/item:opacity-100 transition-opacity duration-300"></div>
+                      <div className="absolute -inset-2 bg-linear-to-r from-green-400/10 to-transparent rounded-lg opacity-0 group-hover/item:opacity-100 transition-opacity duration-300"></div>
                       <div className="relative flex items-start space-x-4 p-4 rounded-lg bg-neutral-800/50 hover:bg-neutral-700/50 transition-all duration-300">
-                        <div className="flex-shrink-0">
+                        <div className="shrink-0">
                           <div className="w-10 h-10 rounded-full bg-green-400/20 flex items-center justify-center">
                             <MapPin className="w-5 h-5 text-green-400" />
                           </div>
@@ -68,9 +68,9 @@ export default function ContactPage() {
 
                     {/* Phone */}
                     <div className="relative group/item">
-                      <div className="absolute -inset-2 bg-gradient-to-r from-blue-400/10 to-transparent rounded-lg opacity-0 group-hover/item:opacity-100 transition-opacity duration-300"></div>
+                      <div className="absolute -inset-2 bg-linear-to-r from-blue-400/10 to-transparent rounded-lg opacity-0 group-hover/item:opacity-100 transition-opacity duration-300"></div>
                       <div className="relative flex items-center space-x-4 p-4 rounded-lg bg-neutral-800/50 hover:bg-neutral-700/50 transition-all duration-300">
-                        <div className="flex-shrink-0">
+                        <div className="shrink-0">
                           <div className="w-10 h-10 rounded-full bg-blue-400/20 flex items-center justify-center">
                             <Phone className="w-5 h-5 text-blue-400" />
                           </div>
@@ -91,9 +91,9 @@ export default function ContactPage() {
 
                     {/* Email */}
                     <div className="relative group/item">
-                      <div className="absolute -inset-2 bg-gradient-to-r from-purple-400/10 to-transparent rounded-lg opacity-0 group-hover/item:opacity-100 transition-opacity duration-300"></div>
+                      <div className="absolute -inset-2 bg-inear-to-r from-purple-400/10 to-transparent rounded-lg opacity-0 group-hover/item:opacity-100 transition-opacity duration-300"></div>
                       <div className="relative flex items-center space-x-4 p-4 rounded-lg bg-neutral-800/50 hover:bg-neutral-700/50 transition-all duration-300">
-                        <div className="flex-shrink-0">
+                        <div className="shrink-0">
                           <div className="w-10 h-10 rounded-full bg-purple-400/20 flex items-center justify-center">
                             <Mail className="w-5 h-5 text-purple-400" />
                           </div>
@@ -118,8 +118,8 @@ export default function ContactPage() {
                     <div className="text-center text-sm text-gray-400">
                       <span className="inline-flex items-center space-x-2">
                         <span>
-                          N'hésitez pas à nous contacter pour plus
-                          d'informations
+                          N&apos;hésitez pas à nous contacter pour plus
+                          d&apos;informations
                         </span>
                       </span>
                     </div>
@@ -129,7 +129,7 @@ export default function ContactPage() {
 
               {/* Map */}
               <div className="space-y-6">
-                <Card className="bg-gradient-to-br from-neutral-800 to-neutral-900 border-neutral-600 shadow-2xl hover:shadow-3xl transition-all duration-300 overflow-hidden group h-full flex flex-col">
+                <Card className="bg-linear-to-br from-neutral-800 to-neutral-900 border-neutral-600 shadow-2xl hover:shadow-3xl transition-all duration-300 overflow-hidden group h-full flex flex-col">
                   {/* Header */}
                   <div className="p-6 border-b border-neutral-700">
                     <div className="flex items-center space-x-3">
@@ -145,7 +145,7 @@ export default function ContactPage() {
 
                   {/* Map container */}
                   <div className="relative flex-1 w-full overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-r from-green-400/10 to-blue-400/10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div className="absolute inset-0 bg-linear-to-r from-green-400/10 to-blue-400/10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     <iframe
                       width="100%"
                       height="100%"
@@ -179,5 +179,5 @@ export default function ContactPage() {
 
       <CustomFooter className="bg-neutral-900" />
     </div>
-  );
+  )
 }

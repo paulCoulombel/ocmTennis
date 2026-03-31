@@ -1,9 +1,9 @@
-import TRPCProvider from "@/components/TRPCProvider";
+import TRPCProvider from '@/components/TRPCProvider'
 
 export default function PolicyLayout({
-  children,
+  children
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
-  return <TRPCProvider>{children}</TRPCProvider>;
+  return <TRPCProvider>{children}</TRPCProvider>
 }

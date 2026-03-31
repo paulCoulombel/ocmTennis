@@ -1,10 +1,10 @@
-import { get } from "http";
-import { publicProcedure, router } from "../../trpc";
+import { get } from 'http'
+import { publicProcedure, router } from '../../trpc'
 import {
   getInformationHandler,
-  getMatchInformationHandler,
-} from "./pool.handler";
-import { getInformationSchema, getMatchInformationSchema } from "./pool.schema";
+  getMatchInformationHandler
+} from './pool.handler'
+import { getInformationSchema, getMatchInformationSchema } from './pool.schema'
 
 export const poolRouter = router({
   getInformation: publicProcedure
@@ -12,5 +12,5 @@ export const poolRouter = router({
     .query(getInformationHandler),
   getMatchInformation: publicProcedure
     .input(getMatchInformationSchema)
-    .query(getMatchInformationHandler),
-});
+    .query(getMatchInformationHandler)
+})

@@ -2,7 +2,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import React from 'react'
 
 export default function TableSkeleton({
-  rowsCount = 5,
+  rowsCount = 5
 }: {
   rowsCount?: number
 }) {

@@ -9,7 +9,7 @@ export interface FilterInputProps {
 export default function FilterInput({
   table,
   columnToFilter,
-  placeholder,
+  placeholder
 }: FilterInputProps) {
   return (
     <Input

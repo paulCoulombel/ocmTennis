@@ -1,4 +1,5 @@
-"use client";
+/* eslint-disable react/no-unescaped-entities */
+'use client'
 
 export default function Page() {
   return (
@@ -122,5 +123,5 @@ export default function Page() {
         </p>
       </div>
     </main>
-  );
+  )
 }

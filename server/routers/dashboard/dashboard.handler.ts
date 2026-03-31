@@ -1,9 +1,9 @@
-import { prisma } from "@/lib/prisma";
+import { prisma } from '@/lib/prisma'
 
 export const getInformationHandler = async ({}) => {
   const teamCount = await prisma.team.count({
-    where: { fromClub: true },
-  });
+    where: { fromClub: true }
+  })
 
   const matchesFromClub = await prisma.match.findMany({
     where: {
@@ -12,48 +12,48 @@ export const getInformationHandler = async ({}) => {
         {
           OR: [
             { homeTeam: { fromClub: true } },
-            { awayTeam: { fromClub: true } },
-          ],
-        },
-      ],
+            { awayTeam: { fromClub: true } }
+          ]
+        }
+      ]
     },
     select: {
       homeScore: true,
       awayScore: true,
       homeTeam: { select: { fromClub: true } },
-      awayTeam: { select: { fromClub: true } },
-    },
-  });
+      awayTeam: { select: { fromClub: true } }
+    }
+  })
   const matchCount = matchesFromClub.filter((match) => {
     if (match.homeScore === null || match.awayScore === null) {
-      return false;
+      return false
     }
-    return true;
-  }).length;
+    return true
+  }).length
   const victoryCount = matchesFromClub.filter((match) => {
     if (match.homeScore === null || match.awayScore === null) {
-      return false;
+      return false
     }
     if (match.homeTeam.fromClub) {
-      return match.homeScore > match.awayScore;
+      return match.homeScore > match.awayScore
     } else {
-      return match.awayScore > match.homeScore;
+      return match.awayScore > match.homeScore
     }
-  }).length;
+  }).length
   const drawCount = matchesFromClub.filter((match) => {
     if (match.homeScore === null || match.awayScore === null) {
-      return false;
+      return false
     }
-    return match.homeScore === match.awayScore;
-  }).length;
+    return match.homeScore === match.awayScore
+  }).length
 
   return {
     teamCount,
     matchCount,
     victoryCount,
-    drawCount,
-  };
-};
+    drawCount
+  }
+}
 
 export const getTableTeamsHandler = async ({}) => {
   const clubTeams = await prisma.team.findMany({
@@ -74,14 +74,14 @@ export const getTableTeamsHandler = async ({}) => {
           id: true,
           dayNumber: true,
           subcategory: true,
-          ballColor: true,
-        },
-      },
-    },
-  });
+          ballColor: true
+        }
+      }
+    }
+  })
   const matches = await prisma.match.findMany({
     where: {
-      OR: [{ homeTeam: { fromClub: true } }, { awayTeam: { fromClub: true } }],
+      OR: [{ homeTeam: { fromClub: true } }, { awayTeam: { fromClub: true } }]
     },
     select: {
       homeScore: true,
@@ -89,23 +89,36 @@ export const getTableTeamsHandler = async ({}) => {
       isPlayed: true,
       homeTeam: { select: { id: true, fromClub: true } },
       awayTeam: { select: { id: true, fromClub: true } },
-      day: true,
-    },
-  });
+      day: true
+    }
+  })
 
-  const teamRows = clubTeams.map((team) => {
+  const allNames = clubTeams.map((team) => {
+    return (
+      (team.pool.category === 'Jeunes' // cspell: words Jeunes
+        ? team.pool.subcategory
+        : team.pool.category) +
+      ' - ' +
+      team.name
+    )
+  })
+  const teamRows = clubTeams.map((team, index) => {
     const teamMatches = matches
       .filter((match) => {
-        return match.homeTeam.id === team.id || match.awayTeam.id === team.id;
+        return match.homeTeam.id === team.id || match.awayTeam.id === team.id
       })
-      .sort((a, b) => a.day - b.day);
+      .sort((a, b) => a.day - b.day)
+    const categoryDisplayed =
+      team.pool.category === 'Jeunes'
+        ? (team.pool.subcategory as string)
+        : team.pool.category
+    const name =
+      team.name === 'OCM 1' &&
+      !allNames.includes(categoryDisplayed + ' - OCM 2')
+        ? categoryDisplayed
+        : allNames[index]
     return {
-      name:
-        team.name +
-        " - " +
-        (team.pool.category === "Jeunes" // cspell: words Jeunes
-          ? team.pool.subcategory
-          : team.pool.category),
+      name,
       points: team.points,
       rank: team.rank,
       pool: {
@@ -118,49 +131,49 @@ export const getTableTeamsHandler = async ({}) => {
         id: team.pool.id.toString(),
         dayNumber: team.pool.dayNumber,
         subcategory: team.pool.subcategory,
-        ballColor: team.pool.ballColor,
+        ballColor: team.pool.ballColor as 'yellow' | 'orange' | 'green'
       },
       matchResults: teamMatches.map((match) => {
-        const isHome = match.homeTeam.id === team.id;
-        const teamScore = isHome ? match.homeScore : match.awayScore;
-        const opponentScore = isHome ? match.awayScore : match.homeScore;
+        const isHome = match.homeTeam.id === team.id
+        const teamScore = isHome ? match.homeScore : match.awayScore
+        const opponentScore = isHome ? match.awayScore : match.homeScore
         if (!match.isPlayed) {
           return {
-            result: "notPlayed",
-            day: match.day,
-          };
+            result: 'notPlayed' as 'win' | 'loss' | 'draw' | 'notPlayed',
+            day: match.day
+          }
         }
         if (teamScore === null || opponentScore === null) {
-          throw new Error("Match scores should not be null for played matches");
+          throw new Error('Match scores should not be null for played matches')
         }
         return {
           result:
             teamScore > opponentScore
-              ? "win"
+              ? 'win'
               : teamScore < opponentScore
-                ? "loss"
-                : "draw",
-          day: match.day,
-        };
-      }),
-    };
-  });
+                ? 'loss'
+                : ('draw' as 'win' | 'loss' | 'draw'),
+          day: match.day
+        }
+      })
+    }
+  })
   return teamRows
     .sort((a, b) => a.name.localeCompare(b.name)) // Sort OCM 1, 2, 3...
     .sort((a, b) => {
       if (
-        a.pool.category === "Jeunes" &&
-        b.pool.category === "Jeunes" &&
+        a.pool.category === 'Jeunes' &&
+        b.pool.category === 'Jeunes' &&
         a.pool.subcategory &&
         b.pool.subcategory
       ) {
         return a.pool.subcategory.localeCompare(b.pool.subcategory, undefined, {
-          numeric: true,
-        }); // Sort by subcategory for Jeunes
+          numeric: true
+        }) // Sort by subcategory for Jeunes
       }
-      return a.pool.category.localeCompare(b.pool.category); // Sort by category
-    });
-};
+      return a.pool.category.localeCompare(b.pool.category) // Sort by category
+    })
+}
 
 export const getNextMatchesHandler = async ({}) => {
   const nextMatches = await prisma.match.findMany({
@@ -171,20 +184,20 @@ export const getNextMatchesHandler = async ({}) => {
         {
           OR: [
             { homeTeam: { fromClub: true } },
-            { awayTeam: { fromClub: true } },
-          ],
+            { awayTeam: { fromClub: true } }
+          ]
         },
         {
-          date: { gte: new Date() },
+          date: { gte: new Date() }
         },
         {
           date: {
-            lte: new Date(new Date().setMonth(new Date().getMonth() + 1)),
-          },
-        },
-      ],
+            lte: new Date(new Date().setMonth(new Date().getMonth() + 1))
+          }
+        }
+      ]
     },
-    orderBy: { date: "asc" },
+    orderBy: { date: 'asc' },
     select: {
       homeTeam: {
         select: {
@@ -192,21 +205,23 @@ export const getNextMatchesHandler = async ({}) => {
           fromClub: true,
           pool: {
             select: {
+              id: true,
               division: true,
               category: true,
               subcategory: true,
               ballColor: true,
               name: true,
-              dayNumber: true,
-            },
-          },
-        },
+              dayNumber: true
+            }
+          }
+        }
       },
       awayTeam: { select: { name: true, fromClub: true } },
       date: true,
-      day: true,
-    },
-  });
+      isLate: true,
+      day: true
+    }
+  })
   return nextMatches.map((match) => ({
     opponentName: match.homeTeam.fromClub
       ? match.awayTeam.name
@@ -216,6 +231,7 @@ export const getNextMatchesHandler = async ({}) => {
       : match.awayTeam.name,
     division: match.homeTeam.pool.division,
     date: match.date,
+    isLate: match.isLate,
     isHome: match.homeTeam.fromClub,
     day: match.day,
     category: match.homeTeam.pool.category,
@@ -223,5 +239,6 @@ export const getNextMatchesHandler = async ({}) => {
     ballColor: match.homeTeam.pool.ballColor,
     poolName: match.homeTeam.pool.name,
     totalDayCount: match.homeTeam.pool.dayNumber,
-  }));
-};
+    poolId: match.homeTeam.pool.id.toString()
+  }))
+}
